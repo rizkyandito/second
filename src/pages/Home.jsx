@@ -27,9 +27,18 @@ export default function Home() {
     if (!debouncedSearchQuery) {
       return merchants
     }
-    return merchants.filter((m) =>
-      m.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-    )
+    return merchants.filter((m) => {
+      const searchText = (
+        m.name +
+        " " +
+        m.category +
+        " " +
+        (m.hashtags || "") +
+        " " +
+        (m.menu || []).map((x) => x.name).join(" ")
+      ).toLowerCase()
+      return searchText.includes(debouncedSearchQuery.toLowerCase())
+    })
   }, [debouncedSearchQuery, merchants])
 
   const categories = useMemo(
@@ -105,7 +114,7 @@ export default function Home() {
           <div className="relative max-w-2xl mx-auto">
             <input
               type="text"
-              placeholder="🔍 Cari nama toko..."
+              placeholder="🔍 Cari nama toko, kategori, atau hashtag..."
               value={searchQuery}
               onChange={handleSearchChange}
               className="w-full px-6 py-4 border-2 border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg dark:bg-slate-900/50 backdrop-blur-xl focus:ring-2 focus:ring-brand focus:border-transparent transition-all duration-300"
