@@ -1,19 +1,11 @@
 import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react'
-import { getJSON, setJSON } from '../utils/storage'
+import { supabase, isSupabaseConfigured } from '../utils/supabaseClient'
 
 const AuthContext = createContext(null)
 
-const ADMIN_ACCOUNTS = [
-  { username: 'manpro_gacor', password: 'CEO_dito' },
-  { username: 'manpro_gacor', password: 'NOE_luqman' },
-  { username: 'manpro_gacor', password: 'UIM_hazqir' },
-  { username: 'manpro_gacor', password: 'GOH_melly' },
-  { username: 'manpro_gacor', password: 'AKK_kanaya' },
-  { username: 'manpro_gacor', password: 'EKA_adel' },
-]
-
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => getJSON('user', null))
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
 
   useEffect(() => {
@@ -21,22 +13,54 @@ export function AuthProvider({ children }) {
     localStorage.setItem('theme', theme)
   }, [theme])
 
-  const login = useCallback(async (u, p) => {
-    const matched = ADMIN_ACCOUNTS.find(
-      (account) => account.username === u && account.password === p
-    )
-    if (matched) {
-      const usr = { username: matched.username }
-      setUser(usr)
-      setJSON('user', usr)
-      return { ok: true }
+  // Check session on mount
+  useEffect(() => {
+    if (!isSupabaseConfigured() || !supabase) {
+      setLoading(false)
+      return
     }
-    return { ok: false, message: 'Username/password salah' }
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
-  const logout = useCallback(() => {
+  const login = useCallback(async (email, password) => {
+    if (!isSupabaseConfigured() || !supabase) {
+      return { ok: false, message: 'Supabase tidak dikonfigurasi' }
+    }
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) {
+        return { ok: false, message: error.message }
+      }
+
+      setUser(data.user)
+      return { ok: true }
+    } catch (err) {
+      return { ok: false, message: err.message || 'Login gagal' }
+    }
+  }, [])
+
+  const logout = useCallback(async () => {
+    if (supabase) {
+      await supabase.auth.signOut()
+    }
     setUser(null)
-    setJSON('user', null)
   }, [])
 
   const toggleTheme = useCallback(() => {
@@ -46,12 +70,13 @@ export function AuthProvider({ children }) {
   const contextValue = useMemo(
     () => ({
       user,
+      loading,
       login,
       logout,
       theme,
       setTheme: toggleTheme,
     }),
-    [user, login, logout, theme, toggleTheme]
+    [user, loading, login, logout, theme, toggleTheme]
   )
 
   return (
