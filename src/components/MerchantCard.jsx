@@ -50,6 +50,18 @@ function MerchantCard({ merchant }) {
               <div className="inline-block px-3 py-1 bg-gradient-to-r from-brand/10 to-brand2/10 rounded-full text-xs font-semibold text-brand dark:text-brand2 border border-brand/20">
                 {merchant.category}
               </div>
+              {merchant.hashtags && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {merchant.hashtags.split(/\s+/).filter(tag => tag.startsWith('#')).slice(0, 4).map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded-full text-xs text-slate-600 dark:text-slate-300"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

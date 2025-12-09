@@ -13,6 +13,7 @@ const mapMerchantRows = (rows = [], detailFetched = false) =>
     logo: row.logo,
     phone: row.phone,
     whatsapp: row.whatsapp,
+    hashtags: row.hashtags || "",
     menu: (row.menu_items || []).map((item) => ({
       id: item.id,
       name: item.name,
@@ -154,7 +155,7 @@ export function DataProvider({ children }) {
       const { data, error } = await supabase
         .from("merchants")
         .select(
-          "id, name, category, logo, phone, whatsapp, menu_items(id, name, price, merchant_id), menu_images(id, image_url, merchant_id)"
+          "id, name, category, logo, phone, whatsapp, hashtags, menu_items(id, name, price, merchant_id), menu_images(id, image_url, merchant_id)"
         )
         .eq("id", merchantId)
         .single()
@@ -189,9 +190,10 @@ export function DataProvider({ children }) {
               logo: payload.logo,
               phone: payload.phone,
               whatsapp: payload.whatsapp,
+              hashtags: payload.hashtags || "",
             },
           ])
-          .select("id, name, category, logo, phone, whatsapp")
+          .select("id, name, category, logo, phone, whatsapp, hashtags")
           .single()
 
         if (insertError) throw insertError

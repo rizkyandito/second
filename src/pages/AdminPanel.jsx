@@ -40,6 +40,7 @@ export default function AdminPanel() {
     logo: "",
     phone: "",
     whatsapp: "",
+    hashtags: "",
   })
   const [editId, setEditId] = useState(null)
   const [notification, setNotification] = useState(null)
@@ -105,6 +106,7 @@ export default function AdminPanel() {
       logo: "",
       phone: "",
       whatsapp: "",
+      hashtags: "",
     })
     setNewMenuItems([])
   }
@@ -147,6 +149,7 @@ export default function AdminPanel() {
         phone: form.phone,
         whatsapp: form.whatsapp,
         logo: logoUrl,
+        hashtags: form.hashtags,
         menu: menuWithImageUrls,
         menu_images: menuWithImageUrls.filter(m => m.image).map(m => ({ image_url: m.image }))
       }
@@ -173,6 +176,7 @@ export default function AdminPanel() {
       logo: m.logo,
       phone: m.phone,
       whatsapp: m.whatsapp,
+      hashtags: m.hashtags || "",
     })
     setNewMenuItems(m.menu || []) // Allow editing existing menu items
   }
@@ -441,6 +445,15 @@ export default function AdminPanel() {
           />
           <div className="md:col-span-2">
             <input
+              value={form.hashtags}
+              onChange={(e) => setForm({ ...form, hashtags: e.target.value })}
+              placeholder="Hashtags (contoh: #pedas #murah #favorit)"
+              className="border rounded-xl px-3 py-2 w-full dark:bg-slate-800"
+            />
+            <p className="text-xs text-slate-500 mt-1">Pisahkan dengan spasi, contoh: #pedas #murah #cepat</p>
+          </div>
+          <div className="md:col-span-2">
+            <input
               type="file"
               accept="image/png, image/jpeg, image/jpg"
               onChange={handleFile}
@@ -552,6 +565,15 @@ export default function AdminPanel() {
                       placeholder="No. WhatsApp (format 62...)"
                       className="border rounded-xl px-3 py-2 dark:bg-slate-800"
                     />
+                    <div className="md:col-span-2">
+                      <input
+                        value={form.hashtags}
+                        onChange={(e) => setForm({ ...form, hashtags: e.target.value })}
+                        placeholder="Hashtags (contoh: #pedas #murah #favorit)"
+                        className="border rounded-xl px-3 py-2 w-full dark:bg-slate-800"
+                      />
+                      <p className="text-xs text-slate-500 mt-1">Pisahkan dengan spasi, contoh: #pedas #murah #cepat</p>
+                    </div>
                     <div className="md:col-span-2">
                       <input
                         type="file"

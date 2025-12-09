@@ -12,7 +12,8 @@ create table if not exists public.merchants (
   category text not null,
   logo text,
   phone text,
-  whatsapp text
+  whatsapp text,
+  hashtags text
 );
 
 -- 2. Tabel menu_items

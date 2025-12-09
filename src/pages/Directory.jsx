@@ -31,6 +31,8 @@ export default function Directory() {
         " " +
         m.category +
         " " +
+        (m.hashtags || "") +
+        " " +
         (m.menu || []).map((x) => x.name).join(" ")
       )
         .toLowerCase()
@@ -73,7 +75,7 @@ export default function Directory() {
             <input
               value={q}
               onChange={handleSearchChange}
-              placeholder="🔍 Cari nama toko atau menu..."
+              placeholder="🔍 Cari nama toko, menu, atau hashtag..."
               className="w-full px-5 py-3 border-2 border-slate-200 dark:border-slate-700 rounded-xl dark:bg-slate-900/50 backdrop-blur-xl focus:ring-2 focus:ring-brand focus:border-transparent transition-all duration-300"
             />
           </div>
